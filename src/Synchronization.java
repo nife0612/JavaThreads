@@ -7,6 +7,30 @@ public class Synchronization {
 
 
     private static void first() {
+        class CommonResource{
+            int x = 0;
+        }
+
+        class CountThread implements Runnable{
+            CommonResource res;
+            CountThread(CommonResource res){
+                this.res = res;
+            }
+
+            @Override
+            public void run() {
+                res.x = 1;
+                for (int i = 1; i < 5; i++){
+                    System.out.printf("%s %d \n", Thread.currentThread().getName(), res.x++);
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        System.out.printf("%s is interrupt \n", Thread.currentThread().getName());
+                    }
+                }
+            }
+        }
+
         CommonResource commonResource = new CommonResource();
         for (int i = 1; i < 6; i++){
             Thread thread = new Thread(new CountThread(commonResource));
@@ -16,6 +40,33 @@ public class Synchronization {
     }
 
     private static void second() {
+        class CommonResource{
+            int x = 0;
+        }
+
+        class SynchronizedRunCountThread implements Runnable{
+            final CommonResource res;
+            SynchronizedRunCountThread(CommonResource res){
+                this.res = res;
+            }
+
+            @Override
+            public void run() {
+                synchronized (res){
+                    res.x = 1;
+                    for (int i = 1; i < 5; i++) {
+                        System.out.printf("%s %d \n", Thread.currentThread().getName(), res.x++);
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            System.out.printf("%s is interrupted \n", Thread.currentThread().getName());
+                        }
+                    }
+                }
+            }
+        }
+
+
         CommonResource res = new CommonResource();
         for (int i = 1; i < 6; i++){
             Thread thread = new Thread(new SynchronizedRunCountThread(res));
@@ -26,9 +77,7 @@ public class Synchronization {
 
 }
 
-class CommonResource{
-    int x = 0;
-}
+
 
 class SynhCommonResource{
     int x = 0;
@@ -41,48 +90,6 @@ class SynhCommonResource{
                 Thread.sleep(100);
             } catch (InterruptedException e) {}
 
-        }
-    }
-}
-
-class CountThread implements Runnable{
-    CommonResource res;
-    CountThread(CommonResource res){
-        this.res = res;
-    }
-
-    @Override
-    public void run() {
-        res.x = 1;
-        for (int i = 1; i < 5; i++){
-            System.out.printf("%s %d \n", Thread.currentThread().getName(), res.x++);
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                System.out.printf("%s is interrupt \n", Thread.currentThread().getName());
-            }
-        }
-    }
-}
-
-class SynchronizedRunCountThread implements Runnable{
-    final CommonResource res;
-    SynchronizedRunCountThread(CommonResource res){
-        this.res = res;
-    }
-
-    @Override
-    public void run() {
-        synchronized (res){
-            res.x = 1;
-            for (int i = 1; i < 5; i++) {
-                System.out.printf("%s %d \n", Thread.currentThread().getName(), res.x++);
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    System.out.printf("%s is interrupted \n", Thread.currentThread().getName());
-                }
-            }
         }
     }
 }

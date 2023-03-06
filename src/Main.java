@@ -11,6 +11,24 @@ public class Main {
     }
 
     private static void first() throws InterruptedException {
+        class JThread extends Thread{
+            JThread(String name){
+                super(name);
+            }
+
+            public void run(){
+                System.out.printf("%s started... \n", Thread.currentThread().getName());
+                try{
+                    Thread.sleep(500);
+                }
+                catch (InterruptedException e){
+                    System.out.println("Thread has been interrupted");
+                }
+                System.out.printf("%s finished... \n", Thread.currentThread().getName());
+
+            }
+        }
+
         int countOfThreads = 22;
         ArrayList<Thread> threadsList = new ArrayList<>();
 
@@ -29,6 +47,20 @@ public class Main {
     }
 
     private static void second(){
+        class MyRun implements Runnable{
+
+            public void run(){
+                System.out.printf("%s started...\n", Thread.currentThread().getName());
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                System.out.printf("%s finished...\n", Thread.currentThread().getName());
+
+            }
+        }
+
         System.out.print("Main thread started...\n");
         Thread myThread = new Thread(new MyRun(), "MyThread");
         myThread.start();
@@ -52,6 +84,32 @@ public class Main {
     }
 
     private static void third(){
+        class MyThread implements Runnable{
+            private boolean isActive;
+
+            MyThread(){
+                isActive = true;
+            }
+
+            public void disable(){
+                isActive = false;
+            }
+            @Override
+            public void run() {
+                System.out.printf("%s started... \n", Thread.currentThread().getName());
+                int counter = 1;
+                while (isActive){
+                    System.out.println("Loop: " + counter++);
+                    try{
+                        Thread.sleep(400);
+                    } catch (InterruptedException e) {
+                        System.out.println("Thread has been interrupted");
+                    }
+                }
+                System.out.printf("%s finished... \n", Thread.currentThread().getName());
+            }
+        }
+
         System.out.println("Main started...");
         MyThread thread = new MyThread();
         new Thread(thread, "MyThread").start();
@@ -68,6 +126,31 @@ public class Main {
     }
 
     private static void thirdByInterrupter(){
+        class MyJThread extends Thread{
+            MyJThread(String name){
+                super(name);
+            }
+
+            @Override
+            public void run() {
+                System.out.printf("%s started... \n", Thread.currentThread().getName());
+
+                int counter = 1;
+
+                try {
+                    while(!isInterrupted()) {
+                        System.out.println("Loop: " + counter++);
+                        Thread.sleep(30);
+                    }
+                } catch (InterruptedException e) {
+                    System.out.println(Thread.currentThread().getName() + " has been interrupted");
+                }
+
+
+                System.out.printf("%s finished... \n", Thread.currentThread().getName());
+            }
+        }
+
         System.out.println("Main thread started...");
         MyJThread thread = new MyJThread("MyJThread");
         thread.start();
@@ -84,85 +167,9 @@ public class Main {
 
 }
 
-class JThread extends Thread{
-    JThread(String name){
-        super(name);
-    }
-
-    public void run(){
-        System.out.printf("%s started... \n", Thread.currentThread().getName());
-        try{
-            Thread.sleep(500);
-        }
-        catch (InterruptedException e){
-            System.out.println("Thread has been interrupted");
-        }
-        System.out.printf("%s finished... \n", Thread.currentThread().getName());
-
-    }
-}
-
-class MyRun implements Runnable{
-
-    public void run(){
-        System.out.printf("%s started...\n", Thread.currentThread().getName());
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.printf("%s finished...\n", Thread.currentThread().getName());
-
-    }
-}
-
-class MyThread implements Runnable{
-    private boolean isActive;
-
-    MyThread(){
-        isActive = true;
-    }
-
-    public void disable(){
-        isActive = false;
-    }
-    @Override
-    public void run() {
-        System.out.printf("%s started... \n", Thread.currentThread().getName());
-        int counter = 1;
-        while (isActive){
-            System.out.println("Loop: " + counter++);
-            try{
-                Thread.sleep(400);
-            } catch (InterruptedException e) {
-                System.out.println("Thread has been interrupted");
-            }
-        }
-        System.out.printf("%s finished... \n", Thread.currentThread().getName());
-    }
-}
-
-class MyJThread extends Thread{
-    MyJThread(String name){
-        super(name);
-    }
-
-    @Override
-    public void run() {
-        System.out.printf("%s started... \n", Thread.currentThread().getName());
-
-        int counter = 1;
-
-        try {
-            while(!isInterrupted()) {
-                System.out.println("Loop: " + counter++);
-                Thread.sleep(30);
-            }
-        } catch (InterruptedException e) {
-            System.out.println(Thread.currentThread().getName() + " has been interrupted");
-        }
 
 
-        System.out.printf("%s finished... \n", Thread.currentThread().getName());
-    }
-}
+
+
+
+
